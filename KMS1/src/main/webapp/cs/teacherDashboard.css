@@ -1,0 +1,174 @@
+html {
+  scroll-behavior: smooth;
+}
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body,
+input {
+  font-family: "Poppins", sans-serif;
+  padding-top: 50px;
+  margin-top: 0;
+}
+
+.headertop {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   height: 100px;
+}
+
+
+
+.logo img {
+    height: 26%;
+    width: 20%;
+    justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+   justify-content: center;
+}
+
+header {
+      background-color: #88c34e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      position: fixed;
+      top:0;
+      z-index: 2;
+    }
+.navSidebar {
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #fff;
+    }
+
+.sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      height: 100%;
+      width: 250px;
+      background-color: #88c34e;
+      display: flex;
+      flex-direction: column;
+      padding-top: 80px;
+      transition: left 0.3s ease;
+      z-index: 1;
+    }
+
+.sidebar img {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+    }
+   
+.profile{
+	margin: 10px;
+}    
+
+.sidebar h3 {
+      margin: 10px 0 5px;
+      font-size: 16px;
+    }
+
+.sidebar p {
+      margin: 0;
+      color: black;
+      font-size: 14px;
+    }
+
+.sidebar a {
+      color: white;
+      padding: 15px 20px;
+      text-decoration: none;
+      display: block;
+    }
+
+  .sidebar a:hover {
+      background-color: #578a2a;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+.banner {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    height: 270px;
+    display: flex;
+    background-image: url(../kindergarten3.jpg);
+    background-size: cover;
+}
+
+
+
+/* Dashboard content */
+.dashboard {
+  padding: 40px 20px;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.dashboard.shifted {
+  margin-left: 250px;
+}
+
+.dashboard h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+}
+
+/* Feature Cards */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card i {
+  font-size: 36px;
+  color: #88c34e;
+  margin-bottom: 15px;
+}
+
+.card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 14px;
+  color: #555;
+}
