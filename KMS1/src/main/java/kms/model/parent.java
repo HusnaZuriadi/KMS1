@@ -11,6 +11,8 @@ public class parent implements Serializable {
 	private String parentEmail;
 	private String parentPass;
 	private String parentPhone;
+	private byte[] parentPhoto;
+
 	
 	public parent () {
 		
@@ -54,6 +56,14 @@ public class parent implements Serializable {
 
 	public void setParentPhone(String parentPhone) {
 		this.parentPhone = parentPhone;
+	}
+
+	public byte[] getParentPhoto() {
+		return parentPhoto;
+	}
+
+	public void setStudPhoto(byte[] parentPhoto) {
+		this.parentPhoto = parentPhoto;
 	}
 	
 	
