@@ -1,92 +1,89 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.util.*, kms.model.teacher" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-    <%@ page import="kms.model.teacher" %>
-<%
-  Object user = session.getAttribute("user");
-  String teacherName = "";
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-  if (user instanceof teacher) {
-      teacher t = (teacher) user;
-      teacherName = t.getTeacherName();
-  }
-%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Teacher Dashboard - Alkauthar Eduqids</title>
-  <link rel="stylesheet" href="css/teacherDashboard.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
- 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - Teacher</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/createTeacher.css" />
 </head>
 <body>
 
-<header>
-    <button class="navSidebar" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-    <div class="logo">
-      <img src="images/LOGO-AL-KAUTHAR-EDUQIDS.png" alt="ALKAUTHAR EDUQIDS Logo">
+ <div class="container">
+    <div class="left-panel">
+      <img src="images/sign up.png" alt="Kids" />
     </div>
-  </header>
 
-  <nav class="sidebar" id="sidebar">
-    <div class="profile">
-       <a href="viewAccount.jsp"><img src="images/admin.jpg" alt="Admin Profile Photo"></a>
-      <h3><%= teacherName %></h3>
+    <div class="right-panel">
+      <h2>Create Account</h2>
+      <form action="CreateAccTController" method="post" onsubmit="return validateForm()">
+        
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Full name" required>
 
-      <p>Teacher</p>
+        <label>Email</label>
+        <input type="email" name="email" placeholder="abc@gmail.com" required>
+
+        <div class="row1">
+          <div class="role">
+            <label>Role</label><br>
+            <select id="roleSelect" name="role" onchange="showTeacherType()" required>
+              <option value="">Select Role</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Phone Number</label><br>
+            <input type="text" name="phone" placeholder="Phone number" required>
+          </div>
+        </div>
+
+        <!-- Only show if Teacher is selected -->
+        <div id="teacherType" class="hidden">
+          <label>Teacher Type</label> <br>
+          <select name="teacherType">
+            <option value="">Select Type</option>
+            <option value="FullTime">Full-Time</option>
+            <option value="PartTime">Part-Time</option>
+          </select>
+        </div>
+
+        <!-- Optional Admin Assignment -->
+        <div id="assignAdmin" class="hidden">
+          <label>Admin</label> <br>
+          <select name="adminId">
+            <option value="">None</option>
+            <c:forEach var="admin" items="${adminList}">
+              <option value="${admin.teacherId}">${admin.teacherName}</option>
+            </c:forEach>
+          </select>
+        </div>
+
+        <label>Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+
+        <button type="submit">Create Account</button>
+
+        <div class="login">
+          Already have an account? <a href="#">Log in</a>
+        </div>
+      </form>
     </div>
-    <a href="#">Dashboard</a>
-    <a href="ListStudentController">Student Registration</a>
-    <a href="#">Teachers</a>
-    <a href="#">Accounts</a>
-    <a href="#">Logout</a>
-  </nav>
-  
-  <div class="banner">
-  <img src="image/bannerteacher.jpg" alt="Banner Image" class="banner-image">
-</div>
-
-
-  <div class="sidebar" id="sidebar">
-    <a href="#"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="#"><i class="fas fa-user-graduate"></i> Students</a>
-    <a href="#"><i class="fas fa-chalkboard-teacher"></i> Teachers</a>
-    <a href="#"><i class="fas fa-chart-line"></i> Student Progress</a>
-    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
   </div>
-
-  <div class="dashboard" id="dashboard">
-    <h2>Welcome, Teacher!</h2>
-    <div class="card-container">
-      <div class="card">
-        <i class="fa-solid fa-user-graduate"></i>
-        <h3>My Students</h3>
-        <p>View and manage your student list.</p>
-      </div>
-      <div class="card">
-        <i class="fa-solid fa-calendar-check"></i>
-        <h3>Attendance</h3>
-        <p>Mark and review attendance records.</p>
-      </div>
-      <div class="card">
-        <i class="fa-solid fa-chart-line"></i>
-        <h3>Student Progress</h3>
-        <p>Monitor students' development and milestones.</p>
-      </div>
-    </div>
-  </div>
   
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      const dashboard = document.getElementById("dashboard");
-      sidebar.classList.toggle("show");
-      dashboard.classList.toggle("shifted");
-    }
-  </script>
-
+  <script src="js/createAcct.js"></script>
 
 </body>
 </html>
