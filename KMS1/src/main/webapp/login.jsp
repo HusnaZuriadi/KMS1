@@ -8,7 +8,7 @@
 <title>Login - Kindergarten System</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="cs/login.css" />
+<link rel="stylesheet" href="css/login.css" />
 </head>
 <body>
 
@@ -46,7 +46,7 @@
 				<button type="submit">Log In</button>
 
 				<div class="register-link">
-					Don't have an account? <a href="register.jsp">Sign Up</a> now!
+					Don't have an account? <a href="createAcc.html">Sign Up</a> now!
 				</div>
 			</form>
 		</div>
