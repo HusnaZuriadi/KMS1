@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import kms.dao.studentDAO;
+import kms.model.parent;
 import kms.model.student;
 
 import java.io.IOException;
@@ -39,23 +40,29 @@ public class deleteStudentController extends HttpServlet {
 		//call deleteShawl() from ShawlDAO class
 		studentDAO.deleteStudent(studId);
 		
-		//set attribute to a servlet request. Set the attribute name to shawls and call getAllShawls() from ShawlDAO class
-		// ✅ Get session to access parentId
+	
+		// get session and role
 				HttpSession session = request.getSession(false);
-				if (session == null || session.getAttribute("parentId") == null) {
-					response.sendRedirect("login.jsp"); // or your login page
+				if (session == null || session.getAttribute("user") == null) {
+					response.sendRedirect("login.jsp");
 					return;
 				}
 
-				int parentId = (Integer) session.getAttribute("parentId");
-	      request.setAttribute("students", studentDAO.getStudentsByParentId(parentId));
-		//Obtain the RequestDispatcher from the request object. The pathname to the resource is listShawl.jsp
-		RequestDispatcher req = request.getRequestDispatcher("listStudent.jsp");
+				String role = (String) session.getAttribute("role");
 
-		//Dispatch the request to another resource using forward() methods of the RequestDispatcher
-		req.forward(request, response);
-	}
-
+				if ("parent".equalsIgnoreCase(role)) {
+					parent p = (parent) session.getAttribute("user");
+					int parentId = p.getParentId();
+					request.setAttribute("students", studentDAO.getStudentsByParentId(parentId));
+					
+				} else if ("admin".equalsIgnoreCase(role)) {
+					request.setAttribute("students", studentDAO.getAllStudents());
+					
+				} 
+				request.setAttribute("msg", "Student successfully deleted.");
+				RequestDispatcher rd = request.getRequestDispatcher("listStudent.jsp");
+		        rd.forward(request, response);
+			}
 	
 
 }
