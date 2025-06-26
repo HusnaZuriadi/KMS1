@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+
 import kms.connection.ConnectionManager;
-import kms.model.*;
+import kms.model.parent;
 
 public class parentDAO {
 	
@@ -59,6 +61,13 @@ public class parentDAO {
 				ps.setString(3, p.getParentPass());
 				ps.setString(4, p.getParentPhone());
 				ps.setInt(5, p.getParentId());
+				
+				if (p.getParentPhoto() != null) {
+				    ps.setBytes(8, p.getParentPhoto());
+				} else {
+				    ps.setNull(8, Types.BLOB);
+				}
+
 
 				//4. execute query
 				ps.executeUpdate();
@@ -72,7 +81,7 @@ public class parentDAO {
 		}
 
 
-		//delete shawl
+		//delete
 		public static void deleteParent(int parentId){
 			//complete the code here
 			try {			
@@ -111,10 +120,11 @@ public class parentDAO {
 				if (rs.next()) {
 					
 			            p.setParentId(rs.getInt("parentId"));
-			            p.setParentName(rs.getString("name"));
-			            p.setParentEmail(rs.getString("email"));
-			            p.setParentPass(rs.getString("password"));
-			            p.setParentPhone(rs.getString("phone"));
+			            p.setParentName(rs.getString("parentName"));
+			            p.setParentEmail(rs.getString("parentEmail"));
+			            p.setParentPass(rs.getString("parentPass"));
+			            p.setParentPhone(rs.getString("parentPhone"));
+
 				}
 				con.close();
 			} catch (SQLException e) {
@@ -123,7 +133,7 @@ public class parentDAO {
 			return p;
 		}
 		
-		//get all student
+		//get all parent
 		public static List<parent> getAllParent(){
 			
 			List<parent> parents = new ArrayList<parent>();
@@ -143,11 +153,12 @@ public class parentDAO {
 				while(rs.next()) {		
 					parent p = new parent();
 			            p.setParentId(rs.getInt("parentId"));
-			            p.setParentName(rs.getString("name"));
-			            p.setParentEmail(rs.getString("email"));
-			            p.setParentPass(rs.getString("password"));
-			            p.setParentPhone(rs.getString("phone"));
-
+			            p.setParentName(rs.getString("parentName"));
+			            p.setParentEmail(rs.getString("parentEmail"));
+			            p.setParentPass(rs.getString("parentPass"));
+			            p.setParentPhone(rs.getString("parentPhone"));
+			            
+			            parents.add(p);
 
 				}
 
@@ -186,5 +197,6 @@ public class parentDAO {
 		    }
 		    return p;
 		}
+
 
 }
