@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kms.connection.ConnectionManager;
-import kms.dao.studentDAO;
-import kms.model.student;
+import kms.dao.*;
+import kms.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,45 +26,63 @@ public class PhotoServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int studId = Integer.parseInt(request.getParameter("studId"));
-        String type = request.getParameter("type"); // either "photo" or "cert"
+    	
+    	 String role = request.getParameter("role");     // student, teacher, parent
+         String type = request.getParameter("type");     // photo or cert
+         String idStr = request.getParameter("id");
+         
+         if (role == null || type == null || idStr == null) {
+             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters.");
+             return;
+         }
+         
+         int id = Integer.parseInt(idStr);
+         byte[] fileData = null;
+         String contentType = "application/octet-stream";// fallback
 
 
-        try { 
-        	student stud = studentDAO.getStudent(studId);
-            byte[] fileData = null;
-            String contentType = "application/octet-stream"; // fallback
-
-            if ("photo".equalsIgnoreCase(type)) {
-                fileData = stud.getStudPhoto();
-                contentType = "image/jpeg"; // you can dynamically detect if needed
-            } else if ("cert".equalsIgnoreCase(type)) {
+         try {
+             if (role.equalsIgnoreCase("student")) {
+                 student stud = studentDAO.getStudent(id);
+                 if ("photo".equalsIgnoreCase(type)) {
+                     fileData = stud.getStudPhoto();
+                     contentType = "image/jpeg";
+            } 
+                 else if ("cert".equalsIgnoreCase(type)) {
                 fileData = stud.getStudBirthCert();
                 contentType = detectMimeType(fileData); // detect JPEG/PNG/PDF
-
-                // Tetapkan nama fail ikut jenis
-                String filename = "birthCert";
-                if (contentType.equals("application/pdf")) {
-                    filename += ".pdf";
-                } else if (contentType.equals("image/jpeg")) {
-                    filename += ".jpg";
-                } else if (contentType.equals("image/png")) {
-                    filename += ".png";
-                }
-
-                // Allow inline view
+                
+                String filename = "birthCert" + getExtension(contentType);
                 response.setHeader("Content-Disposition", "inline; filename=" + filename);
             }
+             
+             } else if (role.equalsIgnoreCase("teacher")) {
+                 teacher t = teacherDAO.getTeacher(id);
+                 if ("photo".equalsIgnoreCase(type)) {
+                     fileData = t.getTeacherPhoto();
+                     contentType = "image/jpeg";
+                 }
+             } else if (role.equalsIgnoreCase("parent")) {
+                 parent p = parentDAO.getParent(id);
+                 if ("photo".equalsIgnoreCase(type)) {
+                     fileData = p.getParentPhoto();
+                     contentType = "image/jpeg";
+                 }
+             } else {
+                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role.");
+                 return;
+             }
 
-            if (fileData == null || fileData.length == 0) {
-                if ("photo".equalsIgnoreCase(type)) {
-                    response.sendRedirect("images/admin.jpg");
-                } else {
-                    response.setContentType("text/plain");
-                    response.getWriter().write("No file found.");
-                }
-                return;
-            }
+
+         if (fileData == null || fileData.length == 0) {
+             if ("photo".equalsIgnoreCase(type)) {
+                 response.sendRedirect("images/default-user.png");
+             } else {
+                 response.setContentType("text/plain");
+                 response.getWriter().write("No file found.");
+             }
+             return;
+         }
 
             // Set headers
             response.setContentType(contentType);
@@ -75,10 +93,11 @@ public class PhotoServlet extends HttpServlet {
             try (OutputStream out = response.getOutputStream()) {
                 out.write(fileData);
             }
-        } catch (Exception e) { 
+        } 
+    catch (Exception e) { 
             throw new ServletException(e); 
         } 
-    }
+}
     
     private String detectMimeType(byte[] fileData) {
         if (fileData == null || fileData.length < 4) {
@@ -102,5 +121,12 @@ public class PhotoServlet extends HttpServlet {
 
         // Fallback
         return "application/octet-stream";
+    }
+    
+    private String getExtension(String mimeType) {
+        if (mimeType.equals("application/pdf")) return ".pdf";
+        if (mimeType.equals("image/jpeg")) return ".jpg";
+        if (mimeType.equals("image/png")) return ".png";
+        return "";
     }
 }
