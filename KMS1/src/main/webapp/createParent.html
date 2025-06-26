@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - Parent</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="cs/signUp.css" />
+</head>
+<body>
+
+  <div class="container">
+    <div class="left-panel">
+      <img src="images/sign up.png" alt="Kids" />
+    </div>
+
+    <div class="right-panel">
+      <h2>Create Account</h2>
+      <form action="createParentController" method="post" onsubmit="return validatePasswords()">
+
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Full name" required>
+
+        <label>Email</label>
+        <input type="email" name="email" placeholder="abc@gmail.com" required>
+
+        <label>Phone Number</label>
+        <input type="tel" name="phone" placeholder="Phone number" required>
+
+        <label>Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+
+        <button type="submit">Create Account</button>
+
+        <div class="login">
+          Already have an account? <a href="#">Log in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript to check password match -->
+  <script>
+    function validatePasswords() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return false; // prevent form submission
+      }
+
+      return true; // allow form to submit
+    }
+  </script>
+
+</body>
+</html>

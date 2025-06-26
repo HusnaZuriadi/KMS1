@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ms">
+ <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="StudentP.css">
+  </head>
+  
+<body>
+
+<header>
+  	<button class="navSidebar" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+  	
+    <div class="logo">
+      <img src="images/LOGO-AL-KAUTHAR-EDUQIDS.png" alt="ALKAUTHAR EDUQIDS">
+    </div>
+  </header>
+
+  <div class="sidebar" id="sidebar">
+  <div class="profile">
+      <img src="images/parent.jpg" alt="Admin Profile">
+      <h3>Nurul Hanim Binti Yusofb</h3>
+      <p>Parent</p>
+    </div>
+    <a href="#">Dashboard</a>
+    <a href="#">Students</a>
+    <a href="#">Teachers</a>
+    <a href="#">Accounts</a>
+    <a href="#">Logout</a>
+  </div>
+  
+<div class="container">
+  <h2>Student Registration</h2>
+
+  <div id="children-list"></div>
+
+  <button class="btn" onclick="toggleForm()">New Student</button>
+
+  <div class="form-section" id="formSection">
+    <form id="childForm">
+      <input type="hidden" id="numChild">
+
+      <label>Full Name</label>
+      <input type="text" id="name" required>
+
+      <label>Date of Birth</label>
+      <input type="date" id="dob" required>
+
+      <label>Gender</label>
+      <select id="gender" required>
+        <option value="" disabled selected>Choose Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      
+      <label>Age</label>
+      <input type="number" id="age" required>
+
+      <label>Address</label>
+      <textarea id="address" rows="2"></textarea>
+
+      <label>Child's Photo</label>
+      <input type="file" id="photo" accept=".pdf,image/*">
+
+      <label>Birth Certificate</label>
+      <input type="file" id="birthCert" accept=".pdf,image/*">
+
+      <button class="btn" type="submit">Submit</button>
+      <button class="btn" type="button" onclick="hideForm()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Script -->
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const dashboard = document.getElementById("dashboard");
+    sidebar.classList.toggle("show");
+    dashboard.classList.toggle("shifted");
+  }
+  const listDiv = document.getElementById('children-list');
+  const form = document.getElementById('childForm');
+  const formSection = document.getElementById('formSection');
+  const photoInput = document.getElementById('photo');
+  const certInput = document.getElementById('birthCert');
+  const indexInput = document.getElementById('numChild');
+
+  const children = [];
+
+  function toggleForm(index = null) {
+    form.reset();
+    indexInput.value = '';
+    formSection.style.display = 'block';
+
+    
+    if (index !== null) {
+      const child = children[index];
+      document.getElementById('name').value = child.name;
+      document.getElementById('dob').value = child.dob;
+      document.getElementById('gender').value = child.gender;
+      document.getElementById('age').value = child.age;
+      document.getElementById('address').value = child.address;
+      document.getElementById("numChild").value = index;
+      document.getElementById("formSection").style.display = "block";
+
+    }
+  }
+
+  form.onsubmit = function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const dob = document.getElementById('dob').value;
+    const gender = document.getElementById('gender').value;
+    const age = document.getElementById('age').value;
+    const address = document.getElementById('address').value;
+    const photo = photoInput.files[0];
+    const cert = certInput.files[0];
+    const index = indexInput.value;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const photoData = photo ? reader.result : (children[index]?.photo || '');
+
+      const certName = cert ? cert.name : (children[index]?.cert || '');
+
+      const newData = {
+        name,
+        dob,
+        gender,
+        age,
+        address,
+        photo: photoData,
+        cert: certName
+      };
+
+      if (index === '') {
+        children.push(newData);
+      } else {
+        children[index] = newData;
+      }
+
+      form.reset();
+      formSection.style.display = 'none';
+      renderChildren();
+    };
+
+    if (photo) {
+      reader.readAsDataURL(photo);
+    } else {
+      reader.onload(); // call manually if no new photo
+    }
+  };
+  
+  function hideForm() {
+	  formSection.style.display = 'none';
+	}
+
+
+  function renderChildren() {
+    listDiv.innerHTML = '';
+
+    if (children.length === 0) {
+      listDiv.innerHTML = '<p>No students registered</p>';
+      return;
+    }
+
+    children.forEach((child, index) => {
+      const card = document.createElement('div');
+      card.className = 'child-card';
+
+      const img = document.createElement('img');
+      img.src = child.photo || 'https://via.placeholder.com/80';
+      card.appendChild(img);
+
+      const info = document.createElement('div');
+      info.className = 'child-details';
+      info.innerHTML = `
+        <p><strong>Name:</strong> ${child.name}</p>
+        <p><strong>Date of Birth:</strong> ${child.dob}</p>
+        <p><strong>Gender:</strong> ${child.gender}</p>
+        <p><strong>Age:</strong> ${child.age}</p>
+        <p><strong>Address:</strong> ${child.address || '-'}</p>
+        <p><strong>Birth Certificate:</strong> ${child.cert || '-'}</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="toggleForm(${index})">Update</button>
+          <button class="btn btn-danger" onclick="deleteChild(${index})">Delete</button>
+        </div>
+      `;
+      card.appendChild(info);
+      listDiv.appendChild(card);
+    });
+  }
+
+  function deleteChild(index) {
+    if (confirm('Delete this child registration?')) {
+      children.splice(index, 1);
+      renderChildren();
+    }
+  }
+
+  renderChildren();
+</script>
+
+</body>
+</html>
