@@ -100,8 +100,17 @@ public class updateStudentController extends HttpServlet {
 
 		        // Get parentId from session
 		        HttpSession session = request.getSession(false);
-		        if (session != null && session.getAttribute("parentId") != null) {
-		            stud.setParentId((Integer) session.getAttribute("parentId"));
+		        String role = (String) session.getAttribute("role");
+		        int parentId = 0;
+		        
+		        if ("parent".equals(role) && session.getAttribute("parentId") != null) {
+		            Object parentIdObj = session.getAttribute("parentId");
+		            if (parentIdObj instanceof Integer) {
+		                parentId = (Integer) parentIdObj;
+		            } else if (parentIdObj instanceof String) {
+		                parentId = Integer.parseInt((String) parentIdObj);
+		            }
+		            stud.setParentId(parentId);
 		        }
 
 		        // Handle file uploads
@@ -134,11 +143,14 @@ public class updateStudentController extends HttpServlet {
 
 		        // Update the student in the database
 		        studentDAO.updateStudent(stud);
+		        
+		        if ("admin".equals(role)) {
+		            request.setAttribute("students", studentDAO.getAllStudents());
+		        } else if ("parent".equals(role)) {
+		            request.setAttribute("students", studentDAO.getStudentsByParentId(parentId));
+		        }
 
-		        int parentId = (Integer) session.getAttribute("parentId");
-		        request.setAttribute("students", studentDAO.getStudentsByParentId(parentId));
 
-				
 				//Obtain the RequestDispatcher from the request object. The pathname to the resource is listShawl.jsp
 				RequestDispatcher req = request.getRequestDispatcher("listStudent.jsp");
 
