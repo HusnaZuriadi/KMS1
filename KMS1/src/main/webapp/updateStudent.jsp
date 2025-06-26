@@ -1,13 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>  
+<%@ page import="kms.model.*" %>
+<%
+  Object user = session.getAttribute("user");
+  String parentName = "";
+
+  if (user instanceof parent) {
+      parent p = (parent) user;
+      parentName = p.getParentName();
+  }
+%>
 <!DOCTYPE html>
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
   <title>Update Student</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="cs/updateStudent.css">
+  <link rel="stylesheet" href="css/updateStudent.css">
 </head>
 <body>
 
@@ -21,8 +31,9 @@
 <nav class="sidebar" id="sidebar">
   <div class="profile">
     <img src="images/admin.jpg" alt="Admin Profile Photo">
-    <h3><%= session.getAttribute("parentName") %></h3>
-    <p>Parent</p>
+   <h3><%= parentName %></h3>
+
+      <p>Parent</p>
   </div>
   <a href="#">Dashboard</a>
   <a href="ListStudentController">Student Registration</a>
@@ -68,15 +79,16 @@
         <div class="form-group">
             <label>Student Photo</label>
             <c:if test="${not empty student.studPhoto}">
-                <img src="PhotoServlet?studId=${student.studId}&type=photo" class="preview-img" alt="Student Photo">
+                <img id="photoPreview" src="PhotoServlet?role=student&id=${student.studId}&type=photo" class="preview-img" alt="Student Photo">
             </c:if>
-            <input type="file" name="photo" accept="image/*">
+            <!-- Input baru -->
+    <input type="file" name="photo" id="photoInput" accept="image/*">
         </div>
 
         <div class="form-group">
             <label>Birth Certificate (PDF or Image)</label>
             <c:if test="${not empty student.studBirthCert}">
-                <a href="PhotoServlet?studId=${student.studId}&type=cert" target="_blank">View Current Certificate</a>
+                <a href="PhotoServlet?role=student&id=${student.studId}&type=cert" target="_blank">View Current Certificate</a>
             </c:if>
             <input type="file" name="birthCert" accept="application/pdf,image/*">
         </div>
@@ -91,7 +103,26 @@
 <script>
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("show");
+  
 }
+document.addEventListener("DOMContentLoaded", function () {
+	  const photoInput = document.getElementById("photoInput");
+	  const photoPreview = document.getElementById("photoPreview");
+
+	  if (photoInput && photoPreview) {
+	    photoInput.addEventListener("change", function () {
+	      const file = this.files[0];
+	      if (file && file.type.startsWith("image/")) {
+	        const reader = new FileReader();
+	        reader.onload = function (e) {
+	          photoPreview.src = e.target.result;  // ✅ override gambar lama
+	        };
+	        reader.readAsDataURL(file);
+	      }
+	    });
+	  }
+	});
 </script>
+
 </body>
 </html>
