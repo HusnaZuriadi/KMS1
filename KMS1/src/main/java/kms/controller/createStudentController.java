@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.Date;
@@ -73,9 +75,7 @@ public class createStudentController extends HttpServlet {
 		}
 		stud.setStudBirthDate(dob);
 
-		// Parent ID from session
-		int parentId = (int) request.getSession().getAttribute("parentId");
-		stud.setParentId(parentId);
+		
 
 		// File uploads
 		Part photoPart = request.getPart("photo");
@@ -89,8 +89,33 @@ public class createStudentController extends HttpServlet {
 			stud.setStudBirthCert(readPartAsBytes(certPart));
 		}
 
+	
+		// Check role dari session
+		String role = (String) request.getSession().getAttribute("role");
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("parentId") == null) {
+		    response.sendRedirect("login.jsp?msg=sessionExpired");
+		    return;
+		}
+
+		int parentId = (Integer) session.getAttribute("parentId");
+		stud.setParentId(parentId);
+		
 		studentDAO.addStudent(stud);
-		response.sendRedirect("listStudent.jsp");
+
+
+		// Hantar semula ke senarai pelajar ikut role
+		if ("admin".equals(role)) {
+		    request.setAttribute("students", studentDAO.getAllStudents());
+		   
+		} else if ("parent".equals(role)) {
+		    request.setAttribute("students", studentDAO.getStudentsByParentId(parentId));
+
+		} else {
+		    response.sendRedirect("login.jsp?msg=sessionExpired");
+		}
+		
+		request.getRequestDispatcher("listStudent.jsp").forward(request, response);
 	}
 
 	private byte[] readPartAsBytes(Part part) throws IOException {
