@@ -7,13 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import kms.connection.ConnectionManager;
 import kms.model.student;
-import java.io.InputStream;
-
 
 public class studentDAO {
-	
 	private static Connection con = null;
 	private static PreparedStatement ps = null;
 	private static ResultSet rs = null;
@@ -257,5 +255,6 @@ public class studentDAO {
 			}
 			return students;
 		}
+
 
 }
