@@ -1,5 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
+<%@ page import="kms.model.*" %>
+<%
+  Object user = session.getAttribute("user");
+  String parentName = "";
+
+  if (user instanceof parent) {
+      parent p = (parent) user;
+      parentName = p.getParentName();
+  }
+%>
 <!DOCTYPE html>
 <html lang="ms">
 <head>
@@ -7,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Registration</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="cs/StudentP.css">
+  <link rel="stylesheet" href="css/StudentP.css">
 </head>
 <body>
 
@@ -21,7 +31,7 @@
   <nav class="sidebar" id="sidebar">
     <div class="profile">
       <img src="images/admin.jpg" alt="Admin Profile Photo">
-      <h3><%= session.getAttribute("parentName") %></h3>
+      <h3><%= parentName %></h3>
 
       <p>Parent</p>
     </div>
@@ -67,7 +77,7 @@
     <input type="file" id="birthCert" name="birthCert" accept=".pdf,image/*" required>
     
     <label>Parent Name</label>
-      <input type="text" value="<%= session.getAttribute("parentName") %>" readonly>
+      <input type="text" value="<%= parentName %>" readonly>
 
     <button class="btn" type="submit">Submit</button>
   </form>
