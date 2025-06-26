@@ -45,9 +45,10 @@ public class loginController extends HttpServlet {
 
 	            parent p = parentDAO.validate(email, password);
 	            if (p != null) {
-	                session.setAttribute("parentId", p.getParentId());
-	                session.setAttribute("parentName", p.getParentName());
-	                response.sendRedirect("parentDashboard.jsp");
+	            	 session.setAttribute("user", p); //set full object
+	                 session.setAttribute("role", "parent");
+	                 session.setAttribute("parentId", p.getParentId());
+	                 response.sendRedirect("parentDashboard.jsp");
 	            } else {
 	                response.sendRedirect("login.jsp?msg=fail");
 	            }
@@ -59,8 +60,9 @@ public class loginController extends HttpServlet {
 	            teacher teach = teacherDAO.validate(email, password);
 	            if (teach != null && !"admin".equalsIgnoreCase(teach.getTeacherRole()))
  {
+	            	session.setAttribute("user", teach);
+	                session.setAttribute("role", "teacher");
 	                session.setAttribute("teacherId", teach.getTeacherId());
-	                session.setAttribute("teacherName", teach.getTeacherName());
 	                response.sendRedirect("teacherDashboard.jsp");
 	            } else {
 	                response.sendRedirect("login.jsp?msg=fail");
@@ -73,9 +75,10 @@ public class loginController extends HttpServlet {
 	            teacher admin = teacherDAO.validate(email, password);
 	            if (admin != null && "admin".equalsIgnoreCase(admin.getTeacherRole()))
  {
-	                session.setAttribute("adminId", admin.getAdminId());
-	                session.setAttribute("adminName", admin.getTeacherName());
-	                response.sendRedirect("adminDashboard.jsp");
+	            	 session.setAttribute("user", admin);
+	                 session.setAttribute("role", "admin");
+	                 session.setAttribute("adminId", admin.getAdminId());
+	                 response.sendRedirect("adminDashboard.jsp");
 	            } else {
 	                response.sendRedirect("login.jsp?msg=fail");
 	            }
