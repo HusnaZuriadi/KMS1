@@ -13,7 +13,9 @@ public class teacher implements Serializable {
 	private String teacherPhone;
 	private String teacherRole;
 	private String teacherType;
-	private int adminId;
+	private Integer adminId;
+	private byte[] teacherPhoto;
+
 
 	
 	public teacher () {
@@ -76,15 +78,21 @@ public class teacher implements Serializable {
 		this.teacherType = teacherType;
 	}
 
-	public int getAdminId() {
+	public Integer getAdminId() {
 		return adminId;
 	}
 
-	public void setAdminId(int adminId) {
+	public void setAdminId(Integer adminId) {
 		this.adminId = adminId;
 	}
-	
-	
+
+	public byte[] getTeacherPhoto() {
+		return teacherPhoto;
+	}
+
+	public void setTeacherPhoto(byte[] teacherPhoto) {
+		this.teacherPhoto = teacherPhoto;
+	}
 	
 	
 }
