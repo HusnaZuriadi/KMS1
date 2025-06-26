@@ -1,8 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
+<%@ page import="kms.model.parent" %>
 <%
-   
+  Object user = session.getAttribute("user");
+  String parentName = "";
+
+  if (user instanceof parent) {
+      parent p = (parent) user;
+      parentName = p.getParentName();
+  }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parent Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="adminDashboard.css">
+  <link rel="stylesheet" href="parentDashboard.css">
 </head>
 <body>
   <header>
@@ -23,8 +31,8 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="images/admin.jpg" alt="Admin Profile Photo">
-      <h3><%= session.getAttribute("parentName") %></h3>
+      <a href="viewAccount.jsp"><img src="images/admin.jpg" alt="Admin Profile Photo"></a>
+      <h3><%= parentName %></h3>
 
       <p>Parent</p>
     </div>
@@ -39,7 +47,7 @@
 
   <main class="dashboard" id="dashboard">
     <section class="welcome">
-      <h2>Welcome back, <%= session.getAttribute("parentName") %></h2>
+     <h2>Welcome back, <%= parentName %></h2>
 
     <div class="cards">
     <a href= "#">
