@@ -11,6 +11,7 @@ import kms.dao.*;
 import kms.model.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Servlet implementation class CreateAccTController
@@ -27,7 +28,14 @@ public class CreateAccTController extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    	List<teacher> adminList = teacherDAO.getAllAdmins(); // get all admin teachers
+        request.setAttribute("adminList", adminList);        // send to JSP
+
+        RequestDispatcher rd = request.getRequestDispatcher("createTeacher.jsp"); // your JSP form
+        rd.forward(request, response);
+    }
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -44,19 +52,20 @@ public class CreateAccTController extends HttpServlet {
 	    String type = request.getParameter("teacherType");
 	    
 	    teacher teach;
-
-		
-	    if ("FullTime".equalsIgnoreCase(type)) {
-	        fullTime ft = new fullTime();
-	        // Do not set salary — leave as null
-	        teach = ft;
+	    
+	    if ("admin".equalsIgnoreCase(role)) {
+	        teach = new fullTime();     // admin is always fullTime
+	        type = "FullTime";     
+	    }// force type to FullTime
+	    else if ("FullTime".equalsIgnoreCase(type)) {
+	        teach = new fullTime();
 	    } else if ("PartTime".equalsIgnoreCase(type)) {
-	        partTime pt = new partTime();
-	        // Do not set contract — leave as null
-	        teach = pt;
+	        teach = new partTime();
 	    } else {
 	        teach = new teacher();
 	    }
+	    
+	    String adminIdParam = request.getParameter("adminId");
 		  
 		//retrieve input from html
 		  teach.setTeacherName(name);
@@ -65,10 +74,18 @@ public class CreateAccTController extends HttpServlet {
 		    teach.setTeacherPhone(phone);
 		    teach.setTeacherRole(role);
 		    teach.setTeacherType(type);
+		    
+		    if (adminIdParam != null && !adminIdParam.isEmpty()) {
+		        teach.setAdminId(Integer.parseInt(adminIdParam));
+		    } else {
+		        teach.setAdminId(null);  // <-- this is safe
+		    }
+		   
 
 		
 		
-		teacherDAO.addTeacher(teach);
+		    teacherDAO.addTeacher(teach, type);
+
 		
 		//set attribute to a servlet request. Set the attribute name to shawls and call getAllShawls() from ShawlDAO class
 				request.setAttribute("teachers", teacherDAO.getAllTeacher());
