@@ -1,13 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>  
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="kms.model.parent" %>
+<%
+  Object user = session.getAttribute("user");
+  String parentName = "";
+
+  if (user instanceof parent) {
+      parent p = (parent) user;
+      parentName = p.getParentName();
+  }
+%>  
 <!DOCTYPE html>
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
   <title>View Student</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="cs/viewStudent.css">
+  <link rel="stylesheet" href="css/viewStudent.css">
  
 </head>
 <body>
@@ -22,7 +32,7 @@
   <nav class="sidebar" id="sidebar">
     <div class="profile">
       <img src="images/admin.jpg" alt="Admin Profile Photo">
-      <h3><%= session.getAttribute("parentName") %></h3>
+     <h3><%= parentName %></h3>
 
       <p>Parent</p>
     </div>
@@ -41,9 +51,9 @@
 
   <c:choose>
     <c:when test="${not empty student.studPhoto}">
-      <img src="PhotoServlet?studId=${student.studId}&type=photo"
-           width="300" height="300"
-           style="display: block; margin: auto;" alt="Student Photo">
+      <img src="PhotoServlet?role=student&type=photo&id=${student.studId}" width="300" height="300">
+
+
     </c:when>
     <c:otherwise>
       <div class="value">No photo uploaded</div>
@@ -71,7 +81,7 @@
   <c:choose>
     <c:when test="${not empty student.studBirthCert}">
       <div class="value">
-        <a href="PhotoServlet?studId=${student.studId}&type=cert" target="_blank">View Birth Certificate</a>
+        <a href="PhotoServlet?id=${student.studId}&type=cert&role=student" target="_blank">View Birth Certificate</a>
       </div>
     </c:when>
     <c:otherwise>
