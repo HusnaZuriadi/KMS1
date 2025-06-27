@@ -1,5 +1,6 @@
 package kms.dao;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -94,6 +95,27 @@ public class teacherDAO {
 		try {
 			// call getConnection() method
 			con = ConnectionManager.getConnection();
+			
+			if(teach.getTeacherPhoto()!= null) {
+				
+				sql = "UPDATE teacher SET teacherName=?,teacherEmail=?,teacherPass=?,teacherPhone=?,  teacherRole=?, teacherType=?, adminId=?, teacherPhoto=?  WHERE teacherId=?";
+				ps = con.prepareStatement(sql);
+				ps.setString(1, teach.getTeacherName());
+				ps.setString(2, teach.getTeacherEmail());
+				ps.setString(3, teach.getTeacherPass());
+				ps.setString(4, teach.getTeacherPhone());
+				ps.setString(5, teach.getTeacherRole());
+				ps.setString(6, teach.getTeacherType());
+				
+				if (teach.getAdminId() != null && teach.getAdminId() != 0) {
+				    ps.setInt(7, teach.getAdminId());
+				} else {
+				    ps.setNull(7, Types.INTEGER); // Elakkan FK error
+				}
+				
+				ps.setBytes(8, teach.getTeacherPhoto());
+				ps.setInt(9, teach.getTeacherId());
+			} else {
 
 			// 3. create statement
 			sql = "UPDATE teacher SET teacherName=?,teacherEmail=?,teacherPass=?,teacherPhone=?,  teacherRole=?, teacherType=?, adminId=?  WHERE teacherId=?";
@@ -106,13 +128,14 @@ public class teacherDAO {
 			ps.setString(4, teach.getTeacherPhone());
 			ps.setString(5, teach.getTeacherRole());
 			ps.setString(6, teach.getTeacherType());
-			ps.setInt(7, teach.getAdminId());
-			ps.setInt(8, teach.getTeacherId());
-
-			if (teach.getTeacherPhoto() != null) {
-				ps.setBytes(9, teach.getTeacherPhoto());
+			
+			if (teach.getAdminId() != null && teach.getAdminId() != 0) {
+			    ps.setInt(7, teach.getAdminId());
 			} else {
-				ps.setNull(9, Types.BLOB);
+			    ps.setNull(7, Types.INTEGER); // Elakkan FK error
+			}
+			
+			ps.setInt(8, teach.getTeacherId());
 			}
 
 			// 4. execute query
@@ -204,27 +227,65 @@ public class teacherDAO {
 
 				String teacherType = rs.getString("teacherType");
 
-				if ("FullTime".equalsIgnoreCase(teacherType)) {
-					teach = new fullTime();
-					sql = "SELECT * FROM FullTime WHERE teacherId=?";
-					PreparedStatement ps2 = con.prepareStatement(sql);
-					ps2.setInt(1, teacherId);
-					ResultSet rs2 = ps2.executeQuery();
-					if (rs2.next()) {
-						((fullTime) teach).setSalary(rs2.getDouble("salary"));
-					}
-				} else if ("PartTime".equalsIgnoreCase(teacherType)) {
-					teach = new partTime();
-					sql = "SELECT * FROM Parttime WHERE teacherId=?";
-					PreparedStatement ps2 = con.prepareStatement(sql);
-					ps2.setInt(1, teacherId);
-					ResultSet rs2 = ps2.executeQuery();
-					if (rs2.next()) {
-						((partTime) teach).setContract(rs2.getInt("contract"));
-					}
-				} else {
-					teach = new teacher();
-				}
+
+	            if ("FullTime".equalsIgnoreCase(teacherType)) {
+	                fullTime ft = new fullTime();
+
+	                // Ambil salary dari table FullTime
+	                PreparedStatement ps2 = con.prepareStatement("SELECT salary FROM FullTime WHERE teacherId = ?");
+	                ps2.setInt(1, teacherId);
+	                ResultSet rs2 = ps2.executeQuery();
+	                if (rs2.next()) {
+	                    ft.setSalary(rs2.getDouble("salary"));
+	                }
+	                
+	                // Set semua common fields
+	                ft.setTeacherId(rs.getInt("teacherId"));
+	                ft.setTeacherName(rs.getString("teacherName"));
+	                ft.setTeacherEmail(rs.getString("teacherEmail"));
+	                ft.setTeacherPass(rs.getString("teacherPass"));
+	                ft.setTeacherPhone(rs.getString("teacherPhone"));
+	                ft.setTeacherRole(rs.getString("teacherRole"));
+	                ft.setTeacherType(rs.getString("teacherType"));
+	                ft.setAdminId(rs.getInt("adminId"));
+	                Blob blobPhoto = rs.getBlob("teacherPhoto");
+	                if (blobPhoto != null) {
+	                    ft.setTeacherPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+	                }
+
+	                teach = ft;
+
+	            } else if ("PartTime".equalsIgnoreCase(teacherType)) {
+	                partTime pt = new partTime();
+
+	                // Ambil contract dari table PartTime
+	                PreparedStatement ps2 = con.prepareStatement("SELECT contract FROM PartTime WHERE teacherId = ?");
+	                ps2.setInt(1, teacherId);
+	                ResultSet rs2 = ps2.executeQuery();
+	                if (rs2.next()) {
+	                    pt.setContract(rs2.getInt("contract"));
+	                }
+	                
+	                // Set semua common fields
+	                pt.setTeacherId(rs.getInt("teacherId"));
+	                pt.setTeacherName(rs.getString("teacherName"));
+	                pt.setTeacherEmail(rs.getString("teacherEmail"));
+	                pt.setTeacherPass(rs.getString("teacherPass"));
+	                pt.setTeacherPhone(rs.getString("teacherPhone"));
+	                pt.setTeacherRole(rs.getString("teacherRole"));
+	                pt.setTeacherType(rs.getString("teacherType"));
+	                pt.setAdminId(rs.getInt("adminId"));
+	                Blob blobPhoto = rs.getBlob("teacherPhoto");
+	                if (blobPhoto != null) {
+	                    pt.setTeacherPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+	                }
+
+
+	                teach = pt;
+
+	            } else {
+	                teach = new teacher();
+	            }
 
 				teach.setTeacherId(rs.getInt("teacherId"));
 				teach.setTeacherName(rs.getString("teacherName"));
@@ -234,6 +295,10 @@ public class teacherDAO {
 				teach.setTeacherRole(rs.getString("teacherRole"));
 				teach.setTeacherType(rs.getString("teacherType"));
 				teach.setAdminId(rs.getInt("adminId"));
+				Blob blobPhoto = rs.getBlob("teacherPhoto");
+				if (blobPhoto != null) {
+				    teach.setTeacherPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+				}
 			}
 			con.close();
 		} catch (SQLException e) {
@@ -299,6 +364,10 @@ public class teacherDAO {
 				teach.setTeacherRole(rs.getString("teacherRole"));
 				teach.setTeacherType(rs.getString("teacherType"));
 				teach.setAdminId(rs.getInt("adminId"));
+				Blob blobPhoto = rs.getBlob("teacherPhoto");
+				if (blobPhoto != null) {
+				    teach.setTeacherPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+				}
 				teachers.add(teach);
 
 			}
@@ -356,15 +425,9 @@ public class teacherDAO {
 			rs = ps.executeQuery();
 
 			if (rs.next()) {
-				teach = new teacher();
-				teach.setTeacherId(rs.getInt("teacherId"));
-				teach.setTeacherName(rs.getString("teacherName"));
-				teach.setTeacherEmail(rs.getString("teacherEmail"));
-				teach.setTeacherPass(rs.getString("teacherPass"));
-				teach.setTeacherPhone(rs.getString("teacherPhone"));
-				teach.setTeacherRole(rs.getString("teacherRole"));
-				teach.setTeacherType(rs.getString("teacherType"));
-				teach.setAdminId(rs.getInt("adminId"));
+				int teacherId = rs.getInt("teacherId");
+				teach = getTeacher(teacherId); // auto detect fullTime / partTime
+				
 			}
 
 			con.close();
@@ -375,4 +438,3 @@ public class teacherDAO {
 	}
 
 }
-
