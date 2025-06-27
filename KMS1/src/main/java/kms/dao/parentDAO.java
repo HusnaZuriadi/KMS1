@@ -1,5 +1,6 @@
 package kms.dao;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,15 +45,18 @@ public class parentDAO {
 		}
 	}
 		
-		//update student by id
+		//update parent by id
 		public static void updateParent(parent p){
 			//complete the code here
 			try {			
 				//call getConnection() method
 				con = ConnectionManager.getConnection();
+				
+				if(p.getParentPhoto() !=null) {
+					
 
 				//3. create statement
-				sql = "UPDATE parent SET parentName=?,parentEmail=?,parentPass=?,parentPhone=? WHERE parentId=?";
+				sql = "UPDATE parent SET parentName=?,parentEmail=?,parentPass=?,parentPhone=?, parentPhoto=? WHERE parentId=?";
 				ps = con.prepareStatement(sql);
 
 				//get values from parent object and set parameter values
@@ -60,12 +64,19 @@ public class parentDAO {
 				ps.setString(2, p.getParentEmail());
 				ps.setString(3, p.getParentPass());
 				ps.setString(4, p.getParentPhone());
-				ps.setInt(5, p.getParentId());
-				
-				if (p.getParentPhoto() != null) {
-				    ps.setBytes(8, p.getParentPhoto());
+				ps.setBytes(5, p.getParentPhoto());
+				ps.setInt(6, p.getParentId());
 				} else {
-				    ps.setNull(8, Types.BLOB);
+					//3. create statement
+					sql = "UPDATE parent SET parentName=?,parentEmail=?,parentPass=?,parentPhone=?, WHERE parentId=?";
+					ps = con.prepareStatement(sql);
+
+					//get values from parent object and set parameter values
+					ps.setString(1, p.getParentName());
+					ps.setString(2, p.getParentEmail());
+					ps.setString(3, p.getParentPass());
+					ps.setString(4, p.getParentPhone());
+					ps.setInt(5, p.getParentId());
 				}
 
 
@@ -124,6 +135,10 @@ public class parentDAO {
 			            p.setParentEmail(rs.getString("parentEmail"));
 			            p.setParentPass(rs.getString("parentPass"));
 			            p.setParentPhone(rs.getString("parentPhone"));
+			            Blob blobPhoto = rs.getBlob("parentPhoto");
+						if (blobPhoto != null) {
+						   p.setParentPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+						}
 
 				}
 				con.close();
@@ -157,6 +172,10 @@ public class parentDAO {
 			            p.setParentEmail(rs.getString("parentEmail"));
 			            p.setParentPass(rs.getString("parentPass"));
 			            p.setParentPhone(rs.getString("parentPhone"));
+			            Blob blobPhoto = rs.getBlob("parentPhoto");
+						if (blobPhoto != null) {
+						   p.setParentPhoto(blobPhoto.getBytes(1, (int) blobPhoto.length()));
+						}
 			            
 			            parents.add(p);
 
@@ -189,6 +208,7 @@ public class parentDAO {
 		             p.setParentEmail(rs.getString("parentEmail"));
 		             p.setParentPass(rs.getString("parentPass"));
 		             p.setParentPhone(rs.getString("parentPhone"));
+		            
 		        }
 
 		        con.close();
